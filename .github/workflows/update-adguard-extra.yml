@@ -1,0 +1,36 @@
+name: Update AdGuard Extra
+
+on:
+  schedule:
+    - cron: '0 0 */2 * *'  # Every 2 days
+  workflow_dispatch:
+
+permissions:
+  contents: write  # ✅ Required for commit + push
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out this repo
+        uses: actions/checkout@v2  # ✅ v2 handles push better in some cases
+
+      - name: Download latest AdGuard Extra
+        run: |
+          curl -sL https://userscripts.adtidy.org/release/adguard-extra/1.0/adguard-extra.user.js -o adguard-extra.js
+
+      - name: Set up Git identity
+        run: |
+          git config user.name "Auto Updater"
+          git config user.email "auto-updater@users.noreply.github.com"
+
+      - name: Commit and push if updated
+        run: |
+          if ! git diff --quiet; then
+            git add adguard-extra.js
+            git commit -m "Update AdGuard Extra script"
+            git push
+          else
+            echo "No changes to commit"
+          fi

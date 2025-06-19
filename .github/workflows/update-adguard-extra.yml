@@ -2,11 +2,11 @@ name: Update AdGuard Extra
 
 on:
   schedule:
-    - cron: '0 0 */2 * *'  # Every 2 days
+    - cron: '0 0 */2 * *'  # every 2 days
   workflow_dispatch:
 
 permissions:
-  contents: write  # ✅ Required for commit + push
+  contents: write
 
 jobs:
   update:
@@ -14,11 +14,19 @@ jobs:
 
     steps:
       - name: Check out this repo
-        uses: actions/checkout@v2  # ✅ v2 handles push better in some cases
+        uses: actions/checkout@v2
 
       - name: Download latest AdGuard Extra
         run: |
           curl -sL https://userscripts.adtidy.org/release/adguard-extra/1.0/adguard-extra.user.js -o adguard-extra.js
+
+      - name: Wrap adguard-extra.js with header and footer
+        run: |
+          echo 'adguard-extra.js text/javascript' > temp.js
+          echo '(function() {' >> temp.js
+          cat adguard-extra.js >> temp.js
+          echo '})();' >> temp.js
+          mv temp.js adguard-extra.js
 
       - name: Set up Git identity
         run: |

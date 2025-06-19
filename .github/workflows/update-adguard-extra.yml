@@ -20,18 +20,11 @@ jobs:
         run: |
           curl -sL https://userscripts.adtidy.org/release/adguard-extra/1.0/adguard-extra.user.js -o adguard-extra.js
 
-      - name: Remove extra UserScript metadata block
+      - name: Remove extra UserScript metadata block with sed
         run: |
-          awk 'BEGIN { skip = 0 }
-            {
-              if ($0 ~ /^\/\/ ==\/UserScript==/) {
-                skip++
-                next
-              }
-              if (skip == 1) next
-              print
-            }' adguard-extra.js > clean.js
+          sed '1,/\/\/ ==\/UserScript==/d' adguard-extra.js > clean.js
           mv clean.js adguard-extra.js
+
 
       - name: Wrap adguard-extra.js with header and footer
         run: |

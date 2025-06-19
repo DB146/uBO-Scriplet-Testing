@@ -20,7 +20,7 @@ jobs:
         run: |
           curl -sL https://userscripts.adtidy.org/release/adguard-extra/1.0/adguard-extra.user.js -o adguard-extra.js
 
-            - name: Remove extra UserScript metadata block
+      - name: Remove extra UserScript metadata block
         run: |
           awk '{
             if ($0 ~ /^\/\/ ==\/UserScript==/) {

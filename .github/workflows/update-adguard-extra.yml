@@ -22,15 +22,16 @@ jobs:
 
       - name: Remove extra UserScript metadata block
         run: |
-          awk '{
-            if ($0 ~ /^\/\/ ==\/UserScript==/) {
-              block++
-              next
-            }
-            if (block < 1 || block >= 2) print
-          }' adguard-extra.js > clean.js
+          awk 'BEGIN { skip = 0 }
+            {
+              if ($0 ~ /^\/\/ ==\/UserScript==/) {
+                skip++
+                next
+              }
+              if (skip == 1) next
+              print
+            }' adguard-extra.js > clean.js
           mv clean.js adguard-extra.js
-
 
       - name: Wrap adguard-extra.js with header and footer
         run: |

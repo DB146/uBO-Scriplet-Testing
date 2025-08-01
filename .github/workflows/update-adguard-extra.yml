@@ -25,9 +25,11 @@ jobs:
         with:
          node-version: '16'
 
-      - name: Deobfuscate the script with de4js
-        # Using the more powerful de4js tool
-        run: npx de4js -s source.js -o deobfuscated.js
+      - name: Install and run de4js
+        # Corrected: Install the package globally first, then run it.
+        run: |
+          npm install -g de4js
+          de4js -s source.js -o deobfuscated.js
 
       - name: Inspect deobfuscated file
         # This step helps you see if the deobfuscation was successful

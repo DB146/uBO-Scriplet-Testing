@@ -26,10 +26,10 @@ jobs:
          node-version: '16'
 
       - name: Install and run de4js
-        # Corrected: Install the package globally first, then run it.
+        # Corrected: Run the command using the full path to avoid PATH issues.
         run: |
           npm install -g de4js
-          de4js -s source.js -o deobfuscated.js
+          "$(npm bin -g)/de4js" -s source.js -o deobfuscated.js
 
       - name: Inspect deobfuscated file
         # This step helps you see if the deobfuscation was successful

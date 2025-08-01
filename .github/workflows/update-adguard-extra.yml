@@ -26,8 +26,8 @@ jobs:
          node-version: '16'
 
       - name: Deobfuscate the script
-        # Takes the original downloaded file and outputs a deobfuscated version
-        run: npx javascript-deobfuscator source.js --output deobfuscated.js
+        # Corrected: Added the --input flag before the filename
+        run: npx javascript-deobfuscator --input source.js --output deobfuscated.js
 
       - name: Format deobfuscated code into a scriplet
         run: |

@@ -26,10 +26,10 @@ jobs:
          node-version: '16'
 
       - name: Install and run de4js
-        # Corrected: Install the package locally, then run with npx.
+        # Corrected: Execute the script directly from the local node_modules bin directory.
         run: |
           npm install de4js
-          npx de4js -s source.js -o deobfuscated.js
+          ./node_modules/.bin/de4js -s source.js -o deobfuscated.js
 
       - name: Inspect deobfuscated file
         # This step helps you see if the deobfuscation was successful

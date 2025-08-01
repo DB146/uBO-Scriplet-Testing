@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Check out this repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Download latest AdGuard Extra
         run: |
@@ -33,6 +33,14 @@ jobs:
           cat adguard-extra.js >> temp.js
           echo '})();' >> temp.js
           mv temp.js adguard-extra.js
+          
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+         node-version: '16'
+
+      - name: Deobfuscate AdGuard Extra script
+        run: npx javascript-deobfuscator adguard-extra.user.js --output adguard-extra.deobfuscated.js
 
       - name: Set up Git identity
         run: |

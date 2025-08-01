@@ -25,17 +25,23 @@ jobs:
         with:
          node-version: '16'
 
-      - name: Deobfuscate the script
-        # Corrected: Added the --input flag before the filename
-        run: npx javascript-deobfuscator --input source.js --output deobfuscated.js
+      - name: Deobfuscate the script with de4js
+        # Using the more powerful de4js tool
+        run: npx de4js -s source.js -o deobfuscated.js
+
+      - name: Inspect deobfuscated file
+        # This step helps you see if the deobfuscation was successful
+        run: |
+          echo "--- First 50 lines of deobfuscated.js ---"
+          head -n 50 deobfuscated.js
+          echo "-------------------------------------------"
 
       - name: Format deobfuscated code into a scriplet
         run: |
           # 1. Remove the UserScript metadata block from the deobfuscated file
           sed '1,/\/\/ ==\/UserScript==/d' deobfuscated.js > clean.js
 
-          # 2. Wrap the cleaned code in an IIFE (Immediately Invoked Function Expression)
-          # This creates the final, self-contained scriplet
+          # 2. Wrap the cleaned code in an IIFE
           {
             echo '(function() {'
             cat clean.js
@@ -49,10 +55,8 @@ jobs:
 
       - name: Commit and push if updated
         run: |
-          # Add the final scriplet file to the staging area
           git add adguard-extra-scriplet.js
           
-          # Check if there are any staged changes to commit
           if ! git diff --staged --quiet; then
             git commit -m "Update AdGuard Extra scriplet"
             git push

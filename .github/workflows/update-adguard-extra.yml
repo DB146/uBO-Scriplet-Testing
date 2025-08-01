@@ -1,4 +1,4 @@
-name: Update AdGuard Extra Scriplet
+name: Update AdGuard Extra
 
 on:
   schedule:
@@ -14,53 +14,36 @@ jobs:
 
     steps:
       - name: Check out this repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Download latest AdGuard Extra
         run: |
-          curl -sL https://userscripts.adtidy.org/release/adguard-extra/1.0/adguard-extra.user.js -o source.js
+          curl -sL https://userscripts.adtidy.org/release/adguard-extra/1.0/adguard-extra.user.js -o adguard-extra.js
 
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-         node-version: '16'
-
-      - name: Install and run de4js
-        # Corrected: Execute the script directly from the local node_modules bin directory.
+      - name: Remove extra UserScript metadata block with sed
         run: |
-          npm install de4js
-          ./node_modules/.bin/de4js -s source.js -o deobfuscated.js
+          sed '1,/\/\/ ==\/UserScript==/d' adguard-extra.js > clean.js
+          mv clean.js adguard-extra.js
 
-      - name: Inspect deobfuscated file
-        # This step helps you see if the deobfuscation was successful
+
+      - name: Wrap adguard-extra.js with header and footer
         run: |
-          echo "--- First 50 lines of deobfuscated.js ---"
-          head -n 50 deobfuscated.js
-          echo "-------------------------------------------"
-
-      - name: Format deobfuscated code into a scriplet
-        run: |
-          # 1. Remove the UserScript metadata block from the deobfuscated file
-          sed '1,/\/\/ ==\/UserScript==/d' deobfuscated.js > clean.js
-
-          # 2. Wrap the cleaned code in an IIFE
-          {
-            echo '(function() {'
-            cat clean.js
-            echo '})();'
-          } > adguard-extra-scriplet.js
+          echo 'adguard-extra.js text/javascript' > temp.js
+          echo '(function() {' >> temp.js
+          cat adguard-extra.js >> temp.js
+          echo '})();' >> temp.js
+          mv temp.js adguard-extra.js
 
       - name: Set up Git identity
         run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "actions-bot@users.noreply.github.com"
+          git config user.name "Auto Updater"
+          git config user.email "auto-updater@users.noreply.github.com"
 
       - name: Commit and push if updated
         run: |
-          git add adguard-extra-scriplet.js
-          
-          if ! git diff --staged --quiet; then
-            git commit -m "Update AdGuard Extra scriplet"
+          if ! git diff --quiet; then
+            git add adguard-extra.js
+            git commit -m "Update AdGuard Extra script"
             git push
           else
             echo "No changes to commit"
